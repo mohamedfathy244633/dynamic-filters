@@ -14,7 +14,7 @@
             "email": "mohamed.fathy244633@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
         "php": ">=8.0"
     },
