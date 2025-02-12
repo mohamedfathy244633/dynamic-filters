@@ -1,0 +1,35 @@
+{
+    "name": "mohamed-fathy/dynamic-filters",
+    "description": "A Laravel package that provides dynamic filtering, sorting, and relationship-based querying for Eloquent models.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "MohamedFathy\\DynamicFilters\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mohamed Fathy",
+            "email": "mohamed.fathy244633@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=8.0",
+        "illuminate/database": "^8.0|^9.0|^10.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MohamedFathy\\DynamicFilters\\DynamicFiltersServiceProvider"
+            ]
+        }
+    }
+}
