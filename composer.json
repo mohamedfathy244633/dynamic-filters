@@ -1,5 +1,5 @@
 {
-    "name": "mohamed-fathy/dynamic-filters",
+    "name": "mohamedfathy/dynamic-filters",
     "description": "A Laravel package that provides dynamic filtering, sorting, and relationship-based querying for Eloquent models.",
     "type": "library",
     "license": "MIT",
