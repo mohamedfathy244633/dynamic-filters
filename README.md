@@ -14,6 +14,11 @@ Filter a query based on a request:
 GET /products?filters[category:eq]=electronics
 ```
 
+## SQL:  
+```sql
+SELECT * FROM products WHERE category = 'Electronics';
+```
+
 
 ## Adding Filters to the `Product` Model 
 ```php
@@ -90,25 +95,17 @@ Below are the available operators you can use in filtering:
 
 ---
 
-## 🎯 Usage Example  
-
-### **Example Request**  
-
-```plaintext
-GET /products?filters[category:eq]=Electronics&filters[price:gte]=500
-
-
 ## 🔍 Query Examples  
 
 ### ✅ **Standard Filtering**  
 
 #### Request:  
 ```plaintext
-GET /products?filters[category:eq]=Electronics
+GET /products?filters[price:gte]=1000
 ```
 #### SQL:  
 ```sql
-SELECT * FROM products WHERE category = 'Electronics';
+SELECT * FROM products WHERE price >= 1000;
 ```
 
 ---
@@ -139,11 +136,24 @@ SELECT * FROM products ORDER BY price DESC;
 
 ---
 
+### ✅ **Pagination**  
+
+#### Request:  
+```plaintext
+GET /products?page=2&per_page=10
+```
+#### SQL:  
+```sql
+SELECT * FROM products LIMIT 10 OFFSET 10;
+```
+
+---
+
 ### ✅ **Filtering by Relationship**  
 
 #### Request:  
 ```plaintext
-GET /products?filters[supplier.country:eq]=USA
+GET /products?relationFilters[supplier.country:eq]=USA
 ```
 #### SQL:  
 ```sql
@@ -161,11 +171,11 @@ WHERE EXISTS (
 
 #### Request:  
 ```plaintext
-GET /products?filters[expensive]=true
+GET /products?customFilters[stock]=low
 ```
 #### SQL:  
 ```sql
-SELECT * FROM products WHERE price > 1000;
+SELECT * FROM products WHERE stock < 10;
 ```
 
 **Custom Filter Class:**  
@@ -176,22 +186,32 @@ namespace App\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
 
-class ExpensiveProductFilter
+class ProductFilters
 {
-    public function apply(Builder $query, $value)
+    protected Builder $query;
+
+    public function __construct(Builder $query)
     {
-        if ($value === 'true') {
-            $query->where('price', '>', 1000);
+        $this->query = $query;
+    }
+
+    public function stock($value): void
+    {
+        if ($value === 'low') {
+            $this->query->where('stock', '<', 10);
+        }
+        if ($value === 'out') {
+            $this->query->where('stock', 0);
         }
     }
+
 }
 ```
-
 ---
 
 ## 🔧 Extending with Custom Filters  
 
-1️⃣ **Create a Filter Class**  
+1️⃣ **Create a Filter Class for each model**  
 ```php
 <?php
 
@@ -199,27 +219,29 @@ namespace App\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
 
-class ActiveUserFilter
+class ProductFilters
 {
-    public function apply(Builder $query, $value)
+    protected Builder $query;
+
+    public function __construct(Builder $query)
     {
-        if ($value === 'true') {
-            $query->where('status', '=', 'active');
+        $this->query = $query;
+    }
+
+    // * - `customFilters[stock]=low` → Filters products with stock less than 10.
+    // * - `customFilters[stock]=out` → Filters products with stock equal to 0.
+    public function stock($value): void
+    {
+        if ($value === 'low') {
+            $this->query->where('stock', '<', 10);
+        }
+        if ($value === 'out') {
+            $this->query->where('stock', 0);
         }
     }
+
 }
 ```
-
-2️⃣ **Register the Filter in Model**  
-```php
-protected array $allowedFilters = ['name', 'email', 'status', 'expensive'];
-```
-
-3️⃣ **Use it in Requests**  
-```plaintext
-GET /users?filters[active]=true
-```
-
 ---
 
 ## ✅ Conclusion  
