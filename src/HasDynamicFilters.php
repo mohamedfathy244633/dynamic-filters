@@ -43,7 +43,7 @@ trait HasDynamicFilters
         $this->applyFilters($query, $params['filters'] ?? []);
         $this->applyRelationFilters($query, $params['relationFilters'] ?? []);
         $this->applyCustomFilters($query, $params['customFilters'] ?? []);
-        $this->applyOrdering($query, $params['order_by'] ?? null);
+        $this->applyOrdering($query, $params['orderBy'] ?? null);
 
         return $query;
     }
