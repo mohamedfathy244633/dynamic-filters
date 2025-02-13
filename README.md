@@ -1,32 +1,57 @@
-# Laravel Query Filtering Library  
+# Dynamic API Query Filters for Laravel Applications
 
-A **lightweight yet powerful** query filtering system for Laravel applications, designed to streamline API filtering with an intuitive query string format.  
-
-With **elegant and flexible filtering**, this library enables dynamic query construction, relationship-based filtering, sorting, and pagination—**all through simple URL parameters**.  
-
-✅ **No complex query logic in controllers**  
-✅ **Highly customizable and extendable**  
-✅ **Works seamlessly with Eloquent relationships**  
-
-## Why Use This Library?  
-
-🔹 **Effortless filtering** – Apply conditions directly via query parameters  
-🔹 **Elegant syntax** – Readable and intuitive API usage  
-🔹 **Advanced relations** – Query nested relationships with ease  
-🔹 **Sorting & pagination** – Enhance API responses efficiently  
-🔹 **Custom filters** – Extend functionality with reusable filters  
-
-This library ensures clean, maintainable, and scalable query handling, making your Laravel applications **more powerful and flexible**. 🚀 
+A **lightweight and flexible** query filtering package for Laravel, supporting **standard filters, relationship filters, and custom filters** via URL parameters. It enables **sorting and pagination** effortlessly while keeping query logic clean and maintainable. With intuitive syntax and extendability, it simplifies API request handling for scalable applications.  
 
 ---
 
-## 📌 Features  
+# 🚀 Basic Usage  
 
-- 🔍 **Dynamic filtering** via query parameters (e.g., `filters[price:gte]=100`)  
-- 📂 **Custom filters** for advanced conditions  
-- 🔗 **Relation filtering** (e.g., `filters[supplier.country:eq]=USA`)  
-- 📑 **Sorting and pagination**  
-- 🏗 **Easily extendable**  
+Filter a query based on a request:  
+
+## Example Request  
+
+```bash
+GET /products?filters[category:eq]=electronics
+```
+
+
+## Adding Filters to the `Product` Model 
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use MohamedFathy\DynamicFilters\HasDynamicFilters;
+
+class Product extends Model
+{
+    use HasDynamicFilters;
+
+    /**
+     * Define the fields that can be filtered dynamically.
+     * Only these attributes can be used in query filters.
+     */
+    protected array $allowedFilters = ['name', 'price', 'category'];
+}
+```
+
+
+## Usage in Controller:
+```php
+/**
+ * list products.
+ *
+ * @param Request $request
+ * @return JsonResponse
+ */
+public function index(Request $request): JsonResponse
+{
+    // The $request->all() resolves to an array like: ['filters' => ['category:eq' => 'electronics']]
+    $data = Product::filter($request->all())->get();
+    return response()->json($data);
+}
+```
 
 ---
 
