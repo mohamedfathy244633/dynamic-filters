@@ -127,7 +127,7 @@ SELECT * FROM products WHERE category = 'Electronics' AND price >= 500;
 
 #### Request:  
 ```plaintext
-GET /products?order_by=-price
+GET /products?orderBy=-price
 ```
 #### SQL:  
 ```sql
@@ -140,7 +140,7 @@ SELECT * FROM products ORDER BY price DESC;
 
 #### Request:  
 ```plaintext
-GET /products?page=2&per_page=10
+GET /products?page=2&perPage=10
 ```
 #### SQL:  
 ```sql
