@@ -121,6 +121,75 @@ class ProductController extends Controller
 
 ---
 
+# 🛠️ Allowed Filter Operators  
+
+This library supports various filtering operators for constructing dynamic queries.  
+
+## 📌 List of Available Operators  
+
+Below are the available operators you can use in filtering:  
+
+### **Equality Operators**  
+
+| Operator  | SQL Equivalent | Description                         | Example Usage                    |
+|-----------|---------------|-------------------------------------|----------------------------------|
+| `eq`      | `=`           | Equal to                           | `filters[status:eq]=active`      |
+| `neq`     | `!=`          | Not equal to                       | `filters[status:neq]=inactive`   |
+
+### **Comparison Operators**  
+
+| Operator  | SQL Equivalent | Description                         | Example Usage                    |
+|-----------|---------------|-------------------------------------|----------------------------------|
+| `gt`      | `>`           | Greater than                       | `filters[price:gt]=100`         |
+| `lt`      | `<`           | Less than                          | `filters[price:lt]=1000`        |
+| `gte`     | `>=`          | Greater than or equal              | `filters[rating:gte]=4`         |
+| `lte`     | `<=`          | Less than or equal                 | `filters[discount:lte]=50`      |
+
+### **String Matching Operators**  
+
+| Operator  | SQL Equivalent | Description                         | Example Usage                    |
+|-----------|---------------|-------------------------------------|----------------------------------|
+| `like`    | `LIKE`        | Partial match                      | `filters[name:like]=phone`      |
+| `nLike`   | `NOT LIKE`    | Does not match pattern             | `filters[name:nLike]=tablet`    |
+
+### **Null Checking Operators**  
+
+| Operator  | SQL Equivalent | Description                         | Example Usage                    |
+|-----------|---------------|-------------------------------------|----------------------------------|
+| `null`    | `IS NULL`     | Field is null                      | `filters[deleted_at:null]`      |
+| `nNull`   | `IS NOT NULL` | Field is not null                  | `filters[updated_at:nNull]`     |
+
+### **List-Based Operators**  
+
+| Operator  | SQL Equivalent | Description                         | Example Usage                    |
+|-----------|---------------|-------------------------------------|----------------------------------|
+| `in`      | `IN`          | Value in list                      | `filters[status:in]=active,pending` |
+| `nIn`     | `NOT IN`      | Value not in list                  | `filters[status:nIn]=banned`    |
+
+### **Range Operators**  
+
+| Operator   | SQL Equivalent  | Description                         | Example Usage                    |
+|------------|----------------|-------------------------------------|----------------------------------|
+| `between`  | `BETWEEN`       | Value in range                     | `filters[price:between]=100,500` |
+| `nBetween` | `NOT BETWEEN`   | Value outside range                | `filters[age:nBetween]=18,60`   |
+
+### **Regular Expression Operators**  
+
+| Operator  | SQL Equivalent | Description                         | Example Usage                    |
+|-----------|---------------|-------------------------------------|----------------------------------|
+| `regexp`  | `REGEXP`      | Matches regex pattern              | `filters[sku:regexp]=^[A-Z]+`   |
+| `nRegexp` | `NOT REGEXP`  | Does not match regex pattern       | `filters[code:nRegexp]=[0-9]+`  |
+
+---
+
+## 🎯 Usage Example  
+
+### **Example Request**  
+
+```plaintext
+GET /products?filters[category:eq]=Electronics&filters[price:gte]=500
+
+
 ## 🔍 Query Examples  
 
 ### ✅ **Standard Filtering**  
