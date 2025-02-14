@@ -38,6 +38,18 @@ class Product extends Model
      * Only these attributes can be used in query filters.
      */
     protected array $allowedFilters = ['name', 'price', 'category'];
+
+    /**
+     * Define the relationships that are allowed for filtering or eager loading.
+     * Only these relations can be included in queries to prevent unwanted data exposure.
+     */
+    protected array $allowedRelations = ['provider'];
+
+    /**
+     * Define the fields that can be used for ordering results.
+     * Only these attributes can be used in ORDER BY clauses to maintain query integrity.
+     */
+    protected array $allowedOrdering = ['id'];
 }
 ```
 
