@@ -117,9 +117,10 @@ trait HasDynamicFilters
         if ($orderBy) {
             $column = ltrim($orderBy, '-');
 
-            if (in_array($column, $this->getAllowedOrdering(), true)) {
-                $query->orderBy($column, str_starts_with($orderBy, '-') ? 'desc' : 'asc');
+            if (!in_array($column, $this->getAllowedOrdering(), true)) {
+                throw new \Exception("orderBy {$column} is not allowed.");
             }
+            $query->orderBy($column, str_starts_with($orderBy, '-') ? 'desc' : 'asc');
         }
     }
 
