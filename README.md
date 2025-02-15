@@ -50,6 +50,11 @@ class Product extends Model
      * Only these attributes can be used in ORDER BY clauses to maintain query integrity.
      */
     protected array $allowedOrdering = ['id'];
+
+    public function provider(): BelongsTo
+    {
+        return $this->belongsTo(Provider::class);
+    }
 }
 ```
 
