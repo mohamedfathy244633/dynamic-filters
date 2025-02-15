@@ -13,6 +13,8 @@ class DynamicFiltersServiceProvider extends ServiceProvider
 
     public function register()
     {
-        //
+        $this->app->bind(APIException::class, function ($app) {
+            return new APIException();
+        });
     }
 }
