@@ -195,15 +195,11 @@ GET /products?customFilters[stock]=low
 SELECT * FROM products WHERE stock < 10;
 ```
 
-# Custom Filtering in Laravel
 
-## Why Use Custom Filters?
+### 🔧 Why Use Custom Filters?
 
-By default, standard filters and relation filters cover most scenarios.  
-However, in some cases, you may need **more flexibility**.  
-
-For example, if your filtering logic involves **complex conditions**,  
-**multiple values**, or **custom operations**, it's best to create a dedicated **Filter Class**  
+By default, standard filters and relation filters cover most scenarios. However, in some cases, you may need **more flexibility**.  
+For example, if your filtering logic involves **complex conditions**, **multiple values**, or **custom operations**, it's best to create a dedicated **Filter Class**  
 for each model and handle all related filters inside it.
 
 ---
@@ -211,9 +207,7 @@ for each model and handle all related filters inside it.
 ## **How to Create Custom Filters**
 
 ### **Create a Filter Class for Each Model**
-Instead of writing filtering logic inside controllers or query scopes,  
-you should create a **dedicated filter class** for each model.  
-
+Instead of writing filtering logic inside controllers or query scopes, you should create a **dedicated filter class** for each model.  
 For example, let's create a **ProductFilters** class that handles filtering for the `Product` model.
 
 ```php
@@ -244,41 +238,6 @@ class ProductFilters
             $this->query->where('stock', 0);
         }
     }
-}
-```
----
-
-## 🔧 Extending with Custom Filters  
-
-**Create a Filter Class for each model**  
-```php
-<?php
-
-namespace App\Filters;
-
-use Illuminate\Database\Eloquent\Builder;
-
-class ProductFilters
-{
-    protected Builder $query;
-
-    public function __construct(Builder $query)
-    {
-        $this->query = $query;
-    }
-
-    // * - `customFilters[stock]=low` → Filters products with stock less than 10.
-    // * - `customFilters[stock]=out` → Filters products with stock equal to 0.
-    public function stock($value): void
-    {
-        if ($value === 'low') {
-            $this->query->where('stock', '<', 10);
-        }
-        if ($value === 'out') {
-            $this->query->where('stock', 0);
-        }
-    }
-
 }
 ```
 ---
