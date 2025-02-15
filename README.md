@@ -165,15 +165,15 @@ SELECT * FROM products LIMIT 10 OFFSET 10;
 
 #### Request:  
 ```plaintext
-GET /products?relationFilters[supplier.country:eq]=USA
+GET /products?relationFilters[provider.name:like]=mohamed
 ```
 #### SQL:  
 ```sql
-SELECT * FROM products 
+SELECT * FROM products
 WHERE EXISTS (
-    SELECT * FROM suppliers 
-    WHERE suppliers.id = products.supplier_id 
-    AND suppliers.country = 'USA'
+	SELECT * FROM providers
+	WHERE products.provider_id = providers.id
+		AND name = 'mohamed'
 );
 ```
 
