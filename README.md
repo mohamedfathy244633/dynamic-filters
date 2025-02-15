@@ -188,11 +188,11 @@ WHERE EXISTS (
 
 #### Request:  
 ```plaintext
-GET /products?customFilters[stock]=low
+GET /products?customFilters[mostExpensiveProductsByProvider]=12
 ```
 #### SQL:  
 ```sql
-SELECT * FROM products WHERE stock < 10;
+select `products`.`id`, `products`.`name`, `products`.`price`, `providers`.`name` as `provider_name` from `products` inner join `providers` on `products`.`provider_id` = `providers`.`id` where `products`.`is_published` = 1 and `products`.`provider_id` = 12 order by `products`.`price` desc;
 ```
 
 
@@ -227,16 +227,21 @@ class ProductFilters
     }
 
     /**
-     * Filter products by stock level.
+     * get most expensive product for each provider.
      */
-    public function stock($value): void
+    public function mostExpensiveProductsByProvider($providerId): void
     {
-        if ($value === 'low') {
-            $this->query->where('stock', '<', 10);
-        }
-        if ($value === 'out') {
-            $this->query->where('stock', 0);
-        }
+        $this->query->select(
+            'products.id',
+            'products.name',
+            'products.price',
+            'providers.name as provider_name'
+        )
+            ->join('providers', 'products.provider_id', '=', 'providers.id')
+            ->where('products.is_published', true)
+            ->where('products.provider_id' , $providerId)
+            ->orderBy('products.price', 'DESC');
+
     }
 }
 ```
