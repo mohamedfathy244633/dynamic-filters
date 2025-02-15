@@ -5,7 +5,6 @@ namespace MohamedFathy\DynamicFilters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use MohamedFathy\DynamicFilters\ApiException;
 
 trait HasDynamicFilters
 {
@@ -63,7 +62,7 @@ trait HasDynamicFilters
             }
 
             if (!in_array($key, $this->getAllowedFilters(), true)) {
-                throw new APIException("The filter '{$key}' is not allowed.");
+                throw new \Exception("The filter '{$key}' is not allowed.");
             }
 
             $this->applyCondition($query, $key, $operator, $value);
@@ -81,7 +80,7 @@ trait HasDynamicFilters
                 [$field, $operator] = explode(':', $fieldWithOperator) + [null, null];
 
                 if (!in_array($relation, $this->getAllowedRelations(), true)) {
-                    continue;
+                    throw new \Exception("The relation '{$relation}' is not allowed.");
                 }
 
                 $query->whereHas($relation, fn ($q) => $this->applyCondition($q, $field, $operator, $value));
@@ -103,9 +102,10 @@ trait HasDynamicFilters
         $filterInstance = new $filterClass($query);
 
         foreach ($filters as $method => $value) {
-            if (method_exists($filterInstance, $method)) {
-                $filterInstance->$method($value);
+            if (!method_exists($filterInstance, $method)) {
+                throw new \Exception("Custom filter {$method} does not exist in " . get_class($filterInstance));
             }
+            $filterInstance->$method($value);
         }
     }
 
