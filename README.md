@@ -176,9 +176,9 @@ GET /products?relationFilters[provider.name:like]=mohamed
 ```sql
 SELECT * FROM products
 WHERE EXISTS (
-	SELECT * FROM providers
-	WHERE products.provider_id = providers.id
-		AND name = 'mohamed'
+    SELECT * FROM providers
+    WHERE products.provider_id = providers.id
+        AND name = 'mohamed'
 );
 ```
 
@@ -195,7 +195,27 @@ GET /products?customFilters[stock]=low
 SELECT * FROM products WHERE stock < 10;
 ```
 
-**Custom Filter Class:**  
+# Custom Filtering in Laravel
+
+## Why Use Custom Filters?
+
+By default, standard filters and relation filters cover most scenarios.  
+However, in some cases, you may need **more flexibility**.  
+
+For example, if your filtering logic involves **complex conditions**,  
+**multiple values**, or **custom operations**, it's best to create a dedicated **Filter Class**  
+for each model and handle all related filters inside it.
+
+---
+
+## **How to Create Custom Filters**
+
+### **Create a Filter Class for Each Model**
+Instead of writing filtering logic inside controllers or query scopes,  
+you should create a **dedicated filter class** for each model.  
+
+For example, let's create a **ProductFilters** class that handles filtering for the `Product` model.
+
 ```php
 <?php
 
@@ -212,6 +232,9 @@ class ProductFilters
         $this->query = $query;
     }
 
+    /**
+     * Filter products by stock level.
+     */
     public function stock($value): void
     {
         if ($value === 'low') {
@@ -221,14 +244,13 @@ class ProductFilters
             $this->query->where('stock', 0);
         }
     }
-
 }
 ```
 ---
 
 ## 🔧 Extending with Custom Filters  
 
-1️⃣ **Create a Filter Class for each model**  
+**Create a Filter Class for each model**  
 ```php
 <?php
 
