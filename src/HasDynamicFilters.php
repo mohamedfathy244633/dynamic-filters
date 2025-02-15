@@ -5,6 +5,7 @@ namespace MohamedFathy\DynamicFilters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use MohamedFathy\DynamicFilters\ApiException;
 
 trait HasDynamicFilters
 {
@@ -50,15 +51,22 @@ trait HasDynamicFilters
 
     /**
      * Apply standard column filters.
+     * @throws ApiException
      */
     protected function applyFilters(Builder $query, array $filters): void
     {
         foreach ($filters as $keyWithOperator => $value) {
             [$key, $operator] = explode(':', $keyWithOperator) + [null, null];
 
-            if ($key && $operator && in_array($key, $this->getAllowedFilters(), true)) {
-                $this->applyCondition($query, $key, $operator, $value);
+            if (!$key || !$operator) {
+                continue;
             }
+
+            if (!in_array($key, $this->getAllowedFilters(), true)) {
+                throw new APIException("The filter '{$key}' is not allowed.");
+            }
+
+            $this->applyCondition($query, $key, $operator, $value);
         }
     }
 
