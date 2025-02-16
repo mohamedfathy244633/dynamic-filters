@@ -83,7 +83,7 @@ trait HasDynamicFilters
                     throw new \Exception("The relation '{$relation}' is not allowed.");
                 }
 
-                $query->whereHas($relation, fn ($q) => $this->applyCondition($q, $field, $operator, $value));
+                $query->whereHas($relation, fn($q) => $this->applyCondition($q, $field, $operator, $value));
             }
         }
     }
@@ -166,7 +166,7 @@ trait HasDynamicFilters
      */
     public function fetchAggregatedRecords(Builder $query, array $params, string $aggregationType, string $aggregationColumn): float
     {
-        return (float) $this->scopeFilter($query, $params)->{$aggregationType}($aggregationColumn);
+        return (float)$this->scopeFilter($query, $params)->{$aggregationType}($aggregationColumn);
     }
 
     /**
@@ -202,7 +202,7 @@ trait HasDynamicFilters
 
         $this->delete([[$keyTwo, $valueTwo]]);
 
-        $data = array_map(fn ($item) => [$keyOne => $item, $keyTwo => $valueTwo], array_unique($valuesOne));
+        $data = array_map(fn($item) => [$keyOne => $item, $keyTwo => $valueTwo], array_unique($valuesOne));
         $this->saveMany($data);
     }
 
@@ -243,8 +243,6 @@ trait HasDynamicFilters
     {
         return $query->filter($params)->delete();
     }
-
-
 
     /**
      * Get allowed filters.
