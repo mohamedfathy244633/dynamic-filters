@@ -148,7 +148,7 @@ trait HasDynamicFilters
     /**
      * Fetch records based on filter conditions.
      */
-    public function scopeFetchRecords(Builder $query, array $params): Collection
+    public function fetchRecords(Builder $query, array $params): Collection
     {
         return $this->scopeFilter($query, $params)->get();
     }
@@ -156,9 +156,17 @@ trait HasDynamicFilters
     /**
      * Fetch a single record based on filter conditions.
      */
-    public function scopeFetchSingleRecord(Builder $query, array $params): ?Model
+    public function fetchSingleRecord(Builder $query, array $params): ?Model
     {
         return $this->scopeFilter($query, $params)->first();
+    }
+
+    /**
+     * Fetch aggregated records based on filter conditions.
+     */
+    public function fetchAggregatedRecords(Builder $query, array $params, string $aggregationType, string $aggregationColumn): float
+    {
+        return (float) $this->scopeFilter($query, $params)->{$aggregationType}($aggregationColumn);
     }
 
     /**
@@ -223,7 +231,7 @@ trait HasDynamicFilters
     /**
      * Update multiple records.
      */
-    public function scopeMultiUpdate(Builder $query, array $params): int
+    public function multiUpdate(Builder $query, array $params): int
     {
         return $query->filter($params)->update($params['updated_data'] ?? []);
     }
@@ -231,18 +239,12 @@ trait HasDynamicFilters
     /**
      * Delete multiple records.
      */
-    public function scopeMultiDelete(Builder $query, array $params): int
+    public function multiDelete(Builder $query, array $params): int
     {
         return $query->filter($params)->delete();
     }
 
-    /**
-     * Fetch aggregated records based on filter conditions.
-     */
-    public function scopeFetchAggregatedRecords(Builder $query, array $params, string $aggregationType, string $aggregationColumn): float
-    {
-        return (float) $this->scopeFilter($query, $params)->{$aggregationType}($aggregationColumn);
-    }
+
 
     /**
      * Get allowed filters.
