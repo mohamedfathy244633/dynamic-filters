@@ -38,7 +38,7 @@ trait HasDynamicFilters
     /**
      * Apply dynamic filters to the query.
      */
-    public function filter(Builder $query, array $params): Builder
+    public function scopeFilter(Builder $query, array $params): Builder
     {
         $this->applyFilters($query, $params['filters'] ?? []);
         $this->applyRelationFilters($query, $params['relationFilters'] ?? []);
@@ -50,7 +50,7 @@ trait HasDynamicFilters
 
     /**
      * Apply standard column filters.
-     * @throws ApiException
+     * @throws \Exception
      */
     protected function applyFilters(Builder $query, array $filters): void
     {
@@ -71,6 +71,7 @@ trait HasDynamicFilters
 
     /**
      * Apply filters on relationships.
+     * @throws \Exception
      */
     protected function applyRelationFilters(Builder $query, array $relationFilters): void
     {
@@ -90,6 +91,7 @@ trait HasDynamicFilters
 
     /**
      * Apply custom filters via a dedicated filter class.
+     * @throws \Exception
      */
     protected function applyCustomFilters(Builder $query, array $filters): void
     {
@@ -148,25 +150,25 @@ trait HasDynamicFilters
     /**
      * Fetch records based on filter conditions.
      */
-    public function fetchRecords(Builder $query, array $params): Collection
+    public function scopeFetchRecords(Builder $query, array $params): Collection
     {
-        return $this->filter($query, $params)->get();
+        return $this->scopeFilter($query, $params)->get();
     }
 
     /**
      * Fetch a single record based on filter conditions.
      */
-    public function fetchSingleRecord(Builder $query, array $params): ?Model
+    public function scopeFetchSingleRecord(Builder $query, array $params): ?Model
     {
-        return $this->filter($query, $params)->first();
+        return $this->scopeFilter($query, $params)->first();
     }
 
     /**
      * Fetch aggregated records based on filter conditions.
      */
-    public function fetchAggregatedRecords(Builder $query, array $params, string $aggregationType, string $aggregationColumn): float
+    public function scopeFetchAggregatedRecords(Builder $query, array $params, string $aggregationType, string $aggregationColumn): float
     {
-        return (float)$this->filter($query, $params)->{$aggregationType}($aggregationColumn);
+        return (float)$this->scopeFilter($query, $params)->{$aggregationType}($aggregationColumn);
     }
 
     /**
