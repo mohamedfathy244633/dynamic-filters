@@ -113,6 +113,7 @@ trait HasDynamicFilters
 
     /**
      * Apply sorting on allowed columns.
+     * @throws \Exception
      */
     protected function applyOrdering(Builder $query, ?string $orderBy): void
     {
@@ -172,6 +173,44 @@ trait HasDynamicFilters
     }
 
     /**
+     * Update multiple records.
+     */
+    public function scopeMultiUpdate(Builder $query, array $params): int
+    {
+        return $this->scopeFilter($query, $params)->update($params['updated_data'] ?? []);
+    }
+
+    /**
+     * Delete multiple records.
+     */
+    public function scopeMultiDelete(Builder $query, array $params): int
+    {
+        return $this->scopeFilter($query, $params)->delete();
+    }
+
+    /**
+     * Store a new record.
+     */
+    public static function storeRecord(array $params): static
+    {
+        $model = new static();
+        $model->fill($params)->save();
+
+        return $model;
+    }
+
+    /**
+     * Update an existing record.
+     */
+    public static function updateRecord(array $params): Model
+    {
+        $model = static::findOrFail($params['id']);
+        $model->fill($params)->save();
+
+        return $model;
+    }
+
+    /**
      * Create or update a single record.
      */
     public function saveOne(array $params): int|Model
@@ -206,44 +245,6 @@ trait HasDynamicFilters
 
         $data = array_map(fn($item) => [$keyOne => $item, $keyTwo => $valueTwo], array_unique($valuesOne));
         $this->saveMany($data);
-    }
-
-    /**
-     * Store a new record.
-     */
-    public static function storeRecord(array $params): static
-    {
-        $model = new static();
-        $model->fill($params)->save();
-
-        return $model;
-    }
-
-    /**
-     * Update an existing record.
-     */
-    public static function updateRecord(array $params): Model
-    {
-        $model = static::findOrFail($params['id']);
-        $model->fill($params)->save();
-
-        return $model;
-    }
-
-    /**
-     * Update multiple records.
-     */
-    public function multiUpdate(Builder $query, array $params): int
-    {
-        return $query->filter($params)->update($params['updated_data'] ?? []);
-    }
-
-    /**
-     * Delete multiple records.
-     */
-    public function multiDelete(Builder $query, array $params): int
-    {
-        return $query->filter($params)->delete();
     }
 
     /**
