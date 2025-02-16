@@ -220,6 +220,8 @@ trait HasDynamicFilters
 
     /**
      * Create or update multiple records.
+     * @example: $params = [['product_id'=> 11, 'quantity'=> 3],['product_id'=> 12, 'quantity'=> 2]]
+     * @example: $extraParams = ['order_id' => '2']
      */
     public function saveMany(array $params, array $extraParams = []): void
     {
@@ -230,6 +232,7 @@ trait HasDynamicFilters
 
     /**
      * Delete all records in a many-to-many table and create new ones.
+     * @example: $params = ['order_id' => ['1', '2', '3'], 'user_id' => '1']
      */
     public function saveManyToMany(array $params): void
     {
