@@ -38,7 +38,7 @@ trait HasDynamicFilters
     /**
      * Apply dynamic filters to the query.
      */
-    public function scopeFilter(Builder $query, array $params): Builder
+    public function filter(Builder $query, array $params): Builder
     {
         $this->applyFilters($query, $params['filters'] ?? []);
         $this->applyRelationFilters($query, $params['relationFilters'] ?? []);
@@ -150,7 +150,7 @@ trait HasDynamicFilters
      */
     public function fetchRecords(Builder $query, array $params): Collection
     {
-        return $this->scopeFilter($query, $params)->get();
+        return $this->filter($query, $params)->get();
     }
 
     /**
@@ -158,7 +158,7 @@ trait HasDynamicFilters
      */
     public function fetchSingleRecord(Builder $query, array $params): ?Model
     {
-        return $this->scopeFilter($query, $params)->first();
+        return $this->filter($query, $params)->first();
     }
 
     /**
@@ -166,7 +166,7 @@ trait HasDynamicFilters
      */
     public function fetchAggregatedRecords(Builder $query, array $params, string $aggregationType, string $aggregationColumn): float
     {
-        return (float)$this->scopeFilter($query, $params)->{$aggregationType}($aggregationColumn);
+        return (float)$this->filter($query, $params)->{$aggregationType}($aggregationColumn);
     }
 
     /**
