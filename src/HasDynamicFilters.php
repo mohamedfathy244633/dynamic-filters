@@ -177,7 +177,7 @@ trait HasDynamicFilters
      */
     public function scopeMultiUpdate(Builder $query, array $params): int
     {
-        return $this->scopeFilter($query, $params)->update($params['updated_data'] ?? []);
+        return $this->scopeFilter($query, $params)->update($params['updatedData'] ?? []);
     }
 
     /**
@@ -213,7 +213,7 @@ trait HasDynamicFilters
     /**
      * Create or update a single record.
      */
-    public function saveOne(array $params): int|Model
+    public function saveOne(array $params): Model
     {
         return isset($params['id']) ? $this->updateRecord($params) : $this->storeRecord($params);
     }

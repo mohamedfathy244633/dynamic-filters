@@ -4,6 +4,7 @@ namespace MohamedFathy\DynamicFilters;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 
 trait HasApiResponse
 {
@@ -16,57 +17,58 @@ trait HasApiResponse
             'filters' => 'array',
             'relationFilters' => 'array',
             'customFilters' => 'array',
-            'singleRecord' => 'string'
+            'updatedData' => 'array',
         ]);
     }
 
     /**
      * Unified response handler.
      */
-    protected function response($query, $params = [], string $message = 'Success', int $status = 200): JsonResponse
-    {
-        if (!empty($params['singleRecord']) && $params['singleRecord'] == 'true') {
-            $data = $query->first();
+    protected function response(
+        mixed $result,
+        array $params = []
+    ): JsonResponse {
+
+        $params = array_merge([
+            'status' => 200,
+            'message' => 'Success',
+            'page' => 1,
+            'perPage' => 10,
+            'type' => 'paginate'
+        ], $params);
+
+        $data = null;
+        if ($result instanceof Builder) {
+            match ($params['type']) {
+                'get' => $data = $result->get(),
+                'first' => $data = $result->first(),
+                default => $data = $result->paginate($params['perPage'], ['*'], 'page', $params['page']),
+            };
         } else {
-            $perPage = $params['perPage'] ?? 10;
-            $page = $params['page'] ?? 1;
-            $data = $query->paginate($perPage, ['*'], 'page', $page);
+            $data = $result;
         }
 
         $class = $this->getMainResourceClass() ?: $this->getDefaultResourceClass();
 
+        $responseData = [
+            'status' => 'success',
+            'message' => $params['message'],
+            'data' => $data instanceof LengthAwarePaginator
+                ? ($class ? $class::collection($data) : $data->items())
+                : ($class ? new $class($data) : $data),
+        ];
+
+        // Add pagination details if the data is paginated
         if ($data instanceof LengthAwarePaginator) {
-            $responseData = [
-                'status' => 'success',
-                'message' => $message,
-                'data' => $class ? $class::collection($data) : $data->items(),
-                'pagination' => [
-                    'current_page' => $data->currentPage(),
-                    'per_page' => $data->perPage(),
-                    'total' => $data->total(),
-                    'last_page' => $data->lastPage(),
-                ],
-            ];
-        } elseif ($data) {
-            $responseData = [
-                'status' => 'success',
-                'message' => $message,
-                'data' => $class ? new $class($data) : $data,
-            ];
-        } else {
-            $responseData = [
-                'status' => 'success',
-                'message' => $message,
-                'data' => [],
+            $responseData['pagination'] = [
+                'current_page' => $data->currentPage(),
+                'per_page' => $data->perPage(),
+                'total' => $data->total(),
+                'last_page' => $data->lastPage(),
             ];
         }
 
-        return response()->json($responseData, $status);
-    }
-
-    public function json($response, $status = 200 ): JsonResponse
-    {
-        return response()->json($response, $status);
+        return response()->json($responseData, $params['status']);
     }
 
     public function getMainResourceClass(): bool|string
