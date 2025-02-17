@@ -5,6 +5,8 @@ namespace MohamedFathy\DynamicFilters;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 trait HasApiResponse
 {
@@ -50,22 +52,36 @@ trait HasApiResponse
 
         $class = $this->getMainResourceClass() ?: $this->getDefaultResourceClass();
 
-        $responseData = [
-            'status' => 'success',
-            'message' => $params['message'],
-            'data' => $data instanceof LengthAwarePaginator
-                ? ($class ? $class::collection($data) : $data->items())
-                : ($class ? new $class($data) : $data),
-        ];
-
-        // Add pagination details if the data is paginated
+        // Prepare response based on data type
         if ($data instanceof LengthAwarePaginator) {
-            $responseData['pagination'] = [
-                'current_page' => $data->currentPage(),
-                'per_page' => $data->perPage(),
-                'total' => $data->total(),
-                'last_page' => $data->lastPage(),
+            $responseData = [
+                'status' => 'success',
+                'message' => $params['message'],
+                'data' => $class ? $class::collection($data) : $data->items(),
+                'pagination' => [
+                    'current_page' => $data->currentPage(),
+                    'per_page' => $data->perPage(),
+                    'total' => $data->total(),
+                    'last_page' => $data->lastPage(),
+                ],
             ];
+        } elseif ($data instanceof Collection) {
+            $responseData = [
+                'status' => 'success',
+                'message' => $params['message'],
+                'data' => $class ? $class::collection($data) : $data,
+            ];
+        } elseif ($data instanceof Model) {
+            $responseData = [
+                'status' => 'success',
+                'message' => $params['message'],
+                'data' => $class ? new $class($data) : $data,
+            ];
+        } else {
+            $responseData = array_merge([
+                'status' => 'success',
+                'message' => $params['message']
+            ], $data);
         }
 
         return response()->json($responseData, $params['status']);
